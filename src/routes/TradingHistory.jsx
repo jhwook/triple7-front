@@ -25,7 +25,6 @@ export default function TradingHistory() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [useDate, setUseDate] = useState(false);
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [listData, setListData] = useState([]);
@@ -46,7 +45,9 @@ export default function TradingHistory() {
 
   function getData(arg) {
     let params = {};
-
+    params.cryptoId = assetInfo.id;
+    params.page = page - 1;
+    params.size = 8;
     if (arg?.filter) {
       if (useDate) {
         params.startDate = startDate;
@@ -57,19 +58,15 @@ export default function TradingHistory() {
     console.log(endDate);
 
     axios
-      .get(
-        `${API.GET_TRADE_HISTORY}/${assetInfo.id}/trades/pagenation/${(page - 1) * 8}/8`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params,
-        }
-      )
+      .get(API.GET_TRADE_HISTORY, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params,
+      })
       .then(({ data }) => {
         console.log(data.dataList);
         setListData(data.dataList);
-        // setTotal(data.bet_log.count);
       })
       .catch((err) => console.error(err));
   }

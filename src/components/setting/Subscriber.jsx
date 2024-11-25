@@ -4,7 +4,6 @@ import moment from 'moment';
 import I_ltArwWhite from '../../img/icon/I_ltArwWhite.svg';
 import I_rtArwWhite from '../../img/icon/I_rtArwWhite.svg';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { API } from '../../api/api';
 import { useTranslation } from 'react-i18next';
@@ -33,9 +32,13 @@ export default function Subscriber() {
     }
 
     axios
-      .get(`${API.GET_MY_FOLLOWERS}/0/10`, {
+      .get(API.GET_MY_FOLLOWERS, {
         headers: {
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: 0,
+          size: 10,
         },
       })
       .then(({ data }) => {

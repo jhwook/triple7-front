@@ -1,27 +1,19 @@
 import { forwardRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import DatePicker, { registerLocale } from 'react-datepicker';
-
+import DatePicker from 'react-datepicker';
 import '../util/react-datepicker.css';
 import I_calender from '../img/icon/I_calender.svg';
-
 import I_ltArwWhite from '../img/icon/I_ltArwWhite.svg';
 import I_rtArwWhite from '../img/icon/I_rtArwWhite.svg';
 import moment from 'moment';
 import { D_historyListHeader, D_historyCategoryList } from '../data/D_market';
 import renderCustomHeader from '../util/DatePickerHeader';
-
 import axios from 'axios';
 import { API } from '../api/api';
 import { useTranslation } from 'react-i18next';
 
 export default function History() {
   const { t } = useTranslation();
-
-  const statusSTR = {
-    0: 'CONFIRMED',
-    1: 'REJECT',
-  };
 
   const [category, setCategory] = useState(0);
   const [startDate, setStartDate] = useState(new Date());
@@ -51,12 +43,14 @@ export default function History() {
       if (useDate) {
         params.startDate = startDate;
         params.endDate = endDate;
+        params.page = page - 1;
+        params.size = 8;
       }
     }
     console.log(startDate);
     console.log(endDate);
     axios
-      .get(`${API.GET_DEPOSIT_HISTORY}/${(page - 1) * 8}/8`, {
+      .get(API.GET_DEPOSIT_HISTORY, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

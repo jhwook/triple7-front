@@ -25,7 +25,6 @@ export default function Rank() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [useDate, setUseDate] = useState(false);
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [listData, setListData] = useState([]);
@@ -67,15 +66,18 @@ export default function Rank() {
 
     params.startDate = startDate;
     params.endDate = endDate;
+    params.page = page - 1;
+    params.size = 8;
+    params.cryptoSymbol = assetInfo.symbol;
 
     axios
-      .get(`${API.GET_RANKING}/${assetInfo.symbol}/${(page - 1) * 8}/8`, {
+      .get(API.GET_RANKING, {
         params,
       })
       .then(({ data }) => {
         console.log(data);
         setListData(data.rankingList);
-        // setTotal(data.bet_log.count);
+        setTotal(data.totalElements);
       })
       .catch((err) => console.error(err));
   }

@@ -17,6 +17,8 @@ import { D_timeList } from '../data/D_bet';
 export default function CandleChart({ assetInfo, chartOpt, openedData }) {
   const dispatch = useDispatch();
 
+  // const url = 'http://localhost:8081/ws';
+
   const [valueSeries, setValueSeries] = useState();
   const [dateAxis, setDateAxis] = useState();
   const [root, setRoot] = useState();
@@ -34,6 +36,43 @@ export default function CandleChart({ assetInfo, chartOpt, openedData }) {
   // });
   // console.log(assetInfo);
   const stompClient = useRef(null);
+  // const url = 'https://013e-1-241-47-142.ngrok-free.app/ws';
+  const url = 'http://localhost:8083/ws';
+  useEffect(() => {
+    const socket = new SockJS(url, null, {
+      transports: ['websocket'],
+      withCredentials: false, // 이 옵션을 추가하여 CORS 정책을 완화
+    }); // WebSocket 설정
+    stompClient.current = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        console.log('Connected');
+
+        // 서버로부터 메시지 구독 및 처리
+        stompClient.current.subscribe(
+          `/topic/get_ticker_price/${assetInfo.symbol}`,
+          (message) => {
+            try {
+              const price = JSON.parse(message.body); // 메시지 파싱
+              setCurrentPrice(Number(price));
+              // console.log('Received price: ' + price);
+            } catch (error) {
+              console.error('Error parsing message: ', error);
+            }
+          }
+        );
+      },
+      onStompError: (frame) => {
+        console.error('Broker error: ', frame.headers['message']);
+      },
+    });
+
+    stompClient.current.activate(); // STOMP 클라이언트 활성화
+
+    return () => {
+      stompClient.current.deactivate(); // 컴포넌트 해제 시 연결 종료
+    };
+  }, []);
 
   function getPreData() {
     console.log('chartOpt.barSize', chartOpt.barSize);
@@ -402,38 +441,6 @@ export default function CandleChart({ assetInfo, chartOpt, openedData }) {
   //   });
   // }, []);
   // ==============================================================================================
-  useEffect(() => {
-    const socket = new SockJS('http://localhost:8081/ws'); // WebSocket 설정
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log('Connected');
-
-        // 서버로부터 메시지 구독 및 처리
-        stompClient.current.subscribe(
-          `/topic/get_ticker_price/${assetInfo.symbol}`,
-          (message) => {
-            try {
-              const price = JSON.parse(message.body); // 메시지 파싱
-              setCurrentPrice(Number(price));
-              // console.log('Received price: ' + price);
-            } catch (error) {
-              console.error('Error parsing message: ', error);
-            }
-          }
-        );
-      },
-      onStompError: (frame) => {
-        console.error('Broker error: ', frame.headers['message']);
-      },
-    });
-
-    stompClient.current.activate(); // STOMP 클라이언트 활성화
-
-    return () => {
-      stompClient.current.deactivate(); // 컴포넌트 해제 시 연결 종료
-    };
-  }, []);
 
   // ==============================================================================================
 

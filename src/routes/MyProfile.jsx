@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import I_cpWhite from '../img/icon/I_cpWhite.svg';
+
 import { onClickCopy, setToast } from '../util/Util';
 import { D_referralCategoryList } from '../data/D_setting';
 import Subscriber from '../components/setting/Subscriber';
 import Subscribed from '../components/setting/Subscribed';
-import DefaultHeader from '../components/header/DefaultHeader';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 export default function MyProfile({ userData }) {

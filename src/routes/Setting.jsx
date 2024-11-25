@@ -25,8 +25,6 @@ export default function Setting() {
       })
       .then(async ({ data }) => {
         console.log(data);
-        // setBalance({ ...data });
-        // console.log('balance', balance);
         setUserData(data);
       })
       .catch((err) => {

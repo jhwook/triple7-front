@@ -18,6 +18,7 @@ import I_buy from '../img/icon/I_buy.svg';
 import I_sell from '../img/icon/I_sell.svg';
 import { setBetFlag } from '../reducers/chart';
 import { setToast } from '../util/Util';
+import OrderBook from '../components/orderbook/OrderBook';
 
 export default function Chart() {
   const [assetInfo, setAssetInfo] = useState();
@@ -36,6 +37,8 @@ export default function Chart() {
   const [amount, setAmount] = useState('');
   const openedData = useSelector((state) => state.chart.openedData);
   const tokenPopupData = useSelector((state) => state.chart.tokenPopupData);
+
+  const token = localStorage.getItem('token');
 
   function getAssetList() {
     axios
@@ -56,15 +59,27 @@ export default function Chart() {
   async function onClickPayBtn(type) {
     let _amount;
     setToast({ type, assetInfo, amount });
-    // axios
-    //   .post()
-    //   .then((res) => {
-    //     console.log(res);
+    axios
+      .post(
+        `${API.POST_TRADE}/${assetInfo.id}/trades`,
+        {
+          amount,
+          tradeType: type,
+          tradeFor: 'SELF',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res);
 
-    //     dispatch(setBetFlag());
-    //     setToast({ type, assetInfo, amount });
-    //   })
-    //   .catch((err) => console.error(err));
+        dispatch(setBetFlag());
+        setToast({ type, assetInfo, amount });
+      })
+      .catch((err) => console.error(err));
     console.log(type, '---', assetInfo, '---', amount);
   }
 
@@ -111,6 +126,10 @@ export default function Chart() {
               </article>
 
               <article className="contArea">
+                <div className="orderBook">
+                  <OrderBook />
+                </div>
+
                 <div className="chartCont">
                   <ul className="btnList">
                     <li>
@@ -242,7 +261,7 @@ export default function Chart() {
                     <button
                       className="highBtn"
                       disabled={!amount}
-                      onClick={() => onClickPayBtn('Buy')}
+                      onClick={() => onClickPayBtn('BUY')}
                     >
                       <span className="defaultBox">
                         {/* <img src={I_buy} alt="" /> */}
@@ -255,7 +274,7 @@ export default function Chart() {
                     <button
                       className="lowBtn"
                       disabled={!amount}
-                      onClick={() => onClickPayBtn('Sell')}
+                      onClick={() => onClickPayBtn('SELL')}
                     >
                       <span className="defaultBox">
                         {/* <img src={I_sell} alt="" /> */}
@@ -366,6 +385,15 @@ const PbetBox = styled.main`
       flex: 1;
       display: flex;
       overflow: hidden;
+
+      .orderBook {
+        width: 20%; /* 부모 요소의 가로 크기를 100%로 설정 */
+        height: 100%; /* 원하는 높이로 설정 (필요에 따라 조정) */
+        padding: 20px; /* 내부 여백을 추가 */
+        margin: 0 auto; /* 요소를 수평 중앙에 배치 */
+        overflow: hidden;
+        position: relative;
+      }
 
       .chartCont {
         flex: 1;

@@ -1,16 +1,13 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import DefaultHeader from '../components/header/DefaultHeader';
-
 import B_lending1 from '../img/bg/B_lending1.png';
-import B_lending2 from '../img/bg/B_lending2.png';
-
+import B_lending2 from '../img/bg/B_lending2.jpeg';
 import B_float1 from '../img/bg/B_float1.png';
 import B_float2 from '../img/bg/B_float2.png';
 import B_float3 from '../img/bg/B_float3.png';
 import B_float4 from '../img/bg/B_float4.png';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -23,9 +20,7 @@ import I_5 from '../img/icon/I_5.png';
 
 export default function Lending() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
-  const [assetList, setAssetList] = useState([]);
   const [rankingList, setRankingList] = useState([]);
 
   const rank = {
@@ -37,10 +32,13 @@ export default function Lending() {
   };
 
   async function getTopRanking() {
-    let _rankingList = [];
-
     let _rankingRes = await axios
-      .get(`${API.GET_TOP_RANKING}/5/BTCUSDT`)
+      .get(API.GET_TOP_RANKING, {
+        params: {
+          limit: 5,
+          symbol: 'BTCUSDT',
+        },
+      })
       .then(({ data }) => {
         return data;
       });
@@ -91,15 +89,6 @@ export default function Lending() {
                   <div className="textBox">
                     <strong className="name">{v.userEmail}</strong>
                     <p className="close">{Number(v.yield).toLocaleString()}</p>
-
-                    {/* <strong
-                      className={`${v.change > 0 ? 'up' : ''} ${
-                        v.change < 0 ? 'dn' : ''
-                      } change`}
-                    >
-                      {v.change &&
-                        `${Math.floor(v.change * 10 ** 2) / 10 ** 2}%`}
-                    </strong> */}
                   </div>
                 </li>
               ))}
@@ -321,6 +310,7 @@ const PlendingBox = styled.main`
             .close {
               font-size: 12px;
               opacity: 1;
+              color: #006400;
             }
 
             .change {

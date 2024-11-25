@@ -50,7 +50,6 @@ export default function App() {
           <Route path="/setting/*" element={<Setting />} />
           <Route path="/ranking/*" element={<Ranking />} />
           <Route path="/market/*" element={<Market />} />
-          {/* <Route path="/position/*" element={<Position />} /> */}
         </Routes>
       </HashRouter>
     </AppBox>
